@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define MAX_CELLS (N+2) * (N+2)
+
 void Solver::Init(unsigned N, float dt, float diff, float visc)
 {
 	this->dt = dt;
@@ -9,6 +11,7 @@ void Solver::Init(unsigned N, float dt, float diff, float visc)
 	this->visc = visc;
 	this->N = N;
 }
+
 /*
 ----------------------------------------------------------------------
 free/clear/allocate simulation data
@@ -16,34 +19,123 @@ free/clear/allocate simulation data
 */
 void Solver::FreeData(void)
 {
-//TODO: Libera los buffers de memoria.
+	//Liberamos la memoria reservada de los buffers previos.
+	if (this->u_prev != NULL)
+	{
+		free(this->u_prev);
+	}
+
+	if (this->v_prev != NULL)
+	{
+		free(this->v_prev);
+	}
+
+	if (this->dens_prev != NULL)
+	{
+		free(this->dens_prev);
+	}
+
+	//Liberamos la memoria reservada de los buffers del estado actual.
+	if (this->u != NULL)
+	{
+		free(this->u);
+	}
+
+	if (this->v != NULL)
+	{
+		free(this->v);
+	}
+
+	if (this->dens != NULL)
+	{
+		free(this->dens);
+	}
 }
 
 void Solver::ClearData(void)
 {
-//TODO: Borra todo el contenido de los buffers
+	for(int i = 0; i < MAX_CELLS; i++) 
+	{
+		this->u_prev[i] = 0;
+		this->v_prev[i] = 0;
+		this->dens_prev[i] = 0;
+
+		this->u[i] = 0;
+		this->v[i] = 0;
+		this->dens[i] = 0;
+	}
 }
 
 bool Solver::AllocateData(void)
 {
-//TODO:
-//Reservamos memoria, en caso de fallo devlvemos false.
-//Antes de devolver true, hay que limpiar la memoria reservada con un ClearData().
+	//Reservamos memoria para los buffers previos.
+	this->u_prev = (float *)malloc(MAX_CELLS * sizeof(float));
+	
+	if (this->u_prev == NULL) 
+	{
+		return false;
+	}
+
+	this->v_prev = (float *)malloc(MAX_CELLS * sizeof(float));
+	
+	if (this->v_prev == NULL)
+	{
+		return false;
+	}
+	
+	this->dens_prev = (float *)malloc(MAX_CELLS * sizeof(float));
+
+	if (this->dens_prev == NULL)
+	{
+		return false;
+	}
+
+	//Reservamos memoria para los buffers del estado actual.
+	this->u = (float *)malloc(MAX_CELLS * sizeof(float));
+
+	if (this->u == NULL)
+	{
+		return false;
+	}
+
+	this->v = (float *)malloc(MAX_CELLS * sizeof(float));
+
+	if (this->v == NULL)
+	{
+		return false;
+	}
+
+	this->dens = (float *)malloc(MAX_CELLS * sizeof(float));
+
+	if (this->dens == NULL)
+	{
+		return false;
+	}
+
+	//Limpiamos la memoria reservada.
+	ClearData();
 }
 
 void Solver::ClearPrevData() 
 {
-//TODO: Borra el contenido de los buffers _prev
+	for (int i = 0; i < MAX_CELLS; i++)
+	{
+		this->u_prev[i] = 0;
+		this->v_prev[i] = 0;
+		this->dens_prev[i] = 0;
+
+	}
 }
 
 void Solver::AddDensity(unsigned x, unsigned y, float source)
 {
-//TODO: Añade el valor de source al array de densidades. Sería interesante usar la macro: XY_TO_ARRAY
+	this->dens_prev[XY_TO_ARRAY(x, y)] = source;
 }
 
 void Solver::AddVelocity(unsigned x, unsigned y, float forceX, float forceY)
 {
-//TODO: Añade el valor de fuerza a sus respectivos arrays. Sería interesante usar la macro: XY_TO_ARRAY
+	this->u_prev[XY_TO_ARRAY(x, y)] = forceX;
+	this->v_prev[XY_TO_ARRAY(x, y)] = forceY;
 }
 
 void Solver::Solve()
@@ -79,19 +171,61 @@ void Solver::VelStep()
 
 void Solver::AddSource(float * base, float * source)
 {
-//TODO: Teniendo en cuenta dt (Delta Time), incrementar el array base con nuestro source. Esto sirve tanto para añadir las nuevas densidades como las nuevas fuerzas.
+	FOR_EACH_CELL
+		base[XY_TO_ARRAY(i, j)] += *source;
+	END_FOR
 }
 
 
 void Solver::SetBounds(int b, float * x)
 {
-/*TODO:
-Input b: 0, 1 or 2.
-	0: borders = same value than the inner value.
-	1: x axis borders inverted, y axis equal.
-	2: y axis borders inverted, x axis equal.
-	Corner values allways are mean value between associated edges.
-*/
+	//Comprobamos el caso.
+	switch(b) 
+	{
+		case 0:
+
+			//Recorremos los bordes.
+			for(int i = 0; i < N + 2; i++) 
+			{
+				x[XY_TO_ARRAY(0, i)] = x[XY_TO_ARRAY(1, i)];
+				x[XY_TO_ARRAY(i, 0)] = x[XY_TO_ARRAY(i, 1)];
+				x[XY_TO_ARRAY(N + 1, i)] = x[XY_TO_ARRAY(N, i)];
+				x[XY_TO_ARRAY(i, N + 1)] = x[XY_TO_ARRAY(i, N)];
+			}
+
+			break;
+		case 1:
+
+			//Recorremos los bordes.
+			for (int i = 0; i < N + 2; i++)
+			{
+				x[XY_TO_ARRAY(0, i)] = x[XY_TO_ARRAY(1, i)];
+				x[XY_TO_ARRAY(i, 0)] = -x[XY_TO_ARRAY(i, 1)];
+				x[XY_TO_ARRAY(N + 1, i)] = x[XY_TO_ARRAY(N, i)];
+				x[XY_TO_ARRAY(i, N + 1)] = -x[XY_TO_ARRAY(i, N)];
+			}
+
+			break;
+		case 2:
+
+			//Recorremos los bordes.
+			for (int i = 0; i < N + 2; i++)
+			{
+				x[XY_TO_ARRAY(0, i)] = -x[XY_TO_ARRAY(1, i)];
+				x[XY_TO_ARRAY(i, 0)] = x[XY_TO_ARRAY(i, 1)];
+				x[XY_TO_ARRAY(N + 1, i)] = -x[XY_TO_ARRAY(N, i)];
+				x[XY_TO_ARRAY(i, N + 1)] = x[XY_TO_ARRAY(i, N)];
+			}
+
+			break;
+	}
+
+	//Establecemos las esquinas.
+	x[XY_TO_ARRAY(0, 0)] = 0;
+	x[XY_TO_ARRAY(0, N + 1)] = 0;
+	x[XY_TO_ARRAY(N + 1, 0)] = 0;
+	x[XY_TO_ARRAY(N + 1, N + 1)] = 0;
+
 }
 
 /*
