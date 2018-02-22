@@ -39,7 +39,30 @@ static void PostDisplay(void)
 
 static void DrawVelocity(void)
 {
-//TODO
+	float xCompX, yCompX, xCompY, yCompY;
+	
+	glLineWidth(1.0f);
+	glBegin(GL_LINES);
+	
+	for (int i = 1; i < N + 1; i++)
+	{
+	
+		xCompX = (i - 0.5f) * h;
+		
+		for (int j = 1; j < N + 1; j++) 
+		{
+			yCompX = (j - 0.5f) * h;
+		
+			xCompY = xCompX + solver.u[XY_TO_ARRAY(i, j)];
+			yCompY = yCompX + solver.v[XY_TO_ARRAY(i, j)];
+			
+			glColor3f(255.0f * xCompY, 255.0f * xCompX, 0.0f);
+			glVertex2f(xCompX, yCompX);
+			glVertex2f(xCompY, yCompY);
+		}
+	}
+
+	glEnd();
 }
 
 static void DrawDensity(void)
