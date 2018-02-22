@@ -44,24 +44,26 @@ static void DrawVelocity(void)
 
 static void DrawDensity(void)
 {
-//TODO
-	double d00, d01, d10, d11;
-
-	for (int i = 0; i <= N; i++)
+	float color;
+	
+	glBegin(GL_QUADS);
+	
+	for (int i = 0; i <= N + 1; i++)
 	{
-		x = (i - 0.5f) * h;
-
-		for (j = 0; j <= N; j++)
+		for (j = 0; j <= N + 1; j++)
 		{
-			y = (j - 0.5f) * h;
-
-			d00 = solver.dens[XY_TO_ARRAY(i, j)];
-			d01 = solver.dens[XY_TO_ARRAY(i, j + 1)];
-			d10 = solver.dens[XY_TO_ARRAY(i, j + 1)];
-			d11 = solver.dens[XY_TO_ARRAY(i, j + 1)];
+			float col = solver.dens[XY_TO_ARRAY(i,j)];
+			
+			glColor3f(col, col, col);
+			
+			glVertex2f((i - 0.5f)*h, (j - 0.5f)*h);
+			glVertex2f((i - 0.5f)*h, (j + 0.5f)*h);
+			glVertex2f((i + 0.5f)*h, (j + 0.5f)*h);
+			glVertex2f((i + 0.5f)*h, (j - 0.5f)*h);
 		}
 	}
-
+	
+	glEnd();
 }
 
 /*
