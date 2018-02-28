@@ -2,7 +2,7 @@
 #define _SOLVER_H_
 
 #define XY_TO_ARRAY(i,j) ((i)+(N+2)*(j))
-#define FOR_EACH_CELL for (int i=1 ; i<=N ; i++ ) { for (int j=1 ; j<=N ; j++ ) {
+#define FOR_EACH_CELL for (unsigned int i=1 ; i<=N ; i++ ) { for (unsigned int j=1 ; j<=N ; j++ ) {
 #define END_FOR }}
 #define SWAP(x0,x) {float * tmp=x0;x0=x;x=tmp;}
 

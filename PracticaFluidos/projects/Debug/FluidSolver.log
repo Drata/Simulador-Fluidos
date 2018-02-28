@@ -1,0 +1,11 @@
+﻿  solver.cpp
+b:\users\adesc\documents\github\simulador-fluidos\practicafluidos\src\solver.cpp(59): warning C4018: '<': no coinciden signed/unsigned
+b:\users\adesc\documents\github\simulador-fluidos\practicafluidos\src\solver.cpp(192): warning C4018: '<': no coinciden signed/unsigned
+b:\users\adesc\documents\github\simulador-fluidos\practicafluidos\src\solver.cpp(204): warning C4018: '<': no coinciden signed/unsigned
+b:\users\adesc\documents\github\simulador-fluidos\practicafluidos\src\solver.cpp(216): warning C4018: '<': no coinciden signed/unsigned
+b:\users\adesc\documents\github\simulador-fluidos\practicafluidos\src\solver.cpp(243): warning C4996: 'memccpy': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _memccpy. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\corecrt_memory.h(79): note: vea la declaración de 'memccpy'
+  main.cpp
+b:\users\adesc\documents\github\simulador-fluidos\practicafluidos\src\main.cpp(71): warning C4101: 'color': variable local sin referencia
+  Generando código...
+  FluidSolver.vcxproj -> B:\Users\adesc\Documents\GitHub\Simulador-Fluidos\PracticaFluidos\Debug\FluidSolver.exe

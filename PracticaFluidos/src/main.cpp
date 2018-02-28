@@ -40,7 +40,8 @@ static void PostDisplay(void)
 static void DrawVelocity(void)
 {
 	float xCompX, yCompX, xCompY, yCompY;
-	
+	double h = 1 / (double)(N + 2);
+
 	glLineWidth(1.0f);
 	glBegin(GL_LINES);
 	
@@ -68,15 +69,16 @@ static void DrawVelocity(void)
 static void DrawDensity(void)
 {
 	float color;
+	double h = 1 / (double)(N + 2);
 	
 	glBegin(GL_QUADS);
 	
 	for (int i = 0; i <= N + 1; i++)
 	{
-		for (j = 0; j <= N + 1; j++)
+		for (int j = 0; j <= N + 1; j++)
 		{
 			float col = solver.dens[XY_TO_ARRAY(i,j)];
-			
+
 			glColor3f(col, col, col);
 			
 			glVertex2f((i - 0.5f)*h, (j - 0.5f)*h);
@@ -244,7 +246,7 @@ int main(int argc, char ** argv)
 	}
 
 	if (argc == 1) {
-		N = 64;
+		N = 128;
 		dt = 0.1f;
 		diff = 0.0001f;
 		visc = 0.0f;
